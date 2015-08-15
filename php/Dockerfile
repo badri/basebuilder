@@ -23,6 +23,8 @@ CMD exec supervisord -n
 EXPOSE 22
 
 RUN	mkdir /var/lib/tsuru
+RUN	mkdir /shared
+RUN     chmod a+w /shared
 RUN	wget --no-check-certificate https://github.com/tsuru/basebuilder/tarball/master -O basebuilder.tar.gz
 RUN	tar -xvf basebuilder.tar.gz -C /var/lib/tsuru --strip 1
 RUN	rm basebuilder.tar.gz
