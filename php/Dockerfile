@@ -2,15 +2,16 @@
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
-# this file describes how to build tsuru php image
+# this file describes how to build a tsuru drupal 7 image
 # to run it:
-# 1- run: $ tsuru-admin platform-add php -d https://raw.github.com/tsuru/basebuilder/master/php/Dockerfile
+# 1- run: $ tsuru-admin platform-add drupal -d https://raw.github.com/badri/basebuilder/master/php/Dockerfile
 
 FROM    ubuntu:14.04
 RUN	apt-get update
 RUN	apt-get install wget -y --force-yes
 RUN	apt-get install openssh-server -y
 RUN	apt-get install supervisor -y
+RUN	apt-get install mysql-client -y
 
 RUN echo 'root:root' | chpasswd
 RUN sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config
