@@ -12,6 +12,8 @@ RUN	apt-get install wget -y --force-yes
 RUN	apt-get install openssh-server -y
 RUN	apt-get install supervisor -y
 RUN	apt-get install mysql-client -y
+RUN	apt-get install php5-mcrypt -y
+RUN 	apt-get install php5-common -y
 
 RUN echo 'root:root' | chpasswd
 RUN sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config
