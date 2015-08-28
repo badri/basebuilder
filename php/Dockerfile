@@ -22,7 +22,7 @@ RUN echo -e '[program:sshd]\ncommand=/usr/sbin/sshd -D\n\n' >> /etc/supervisor/s
 CMD exec supervisord -n
 EXPOSE 22
 
-RUN     echo "extension=mcrypt.so" >> /etc/php5/cli/php.ini
+RUN     php5enmod mcrypt
 RUN	mkdir /var/lib/tsuru
 RUN	mkdir /shared
 RUN     chmod a+w /shared
