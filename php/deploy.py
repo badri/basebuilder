@@ -79,16 +79,16 @@ class Manager(object):
                 if os.system(mv_cmd) != 0:
                     raise InstallationException('Unable to mv composer.phar')
 
-            composer_version = self.configuration.get('drush', 7)
-            if composer_version == 8:
+            drush_version = self.configuration.get('drush', 7)
+            if drush_version == 8:
                 if os.system('composer global require drush/drush:dev-master') != 0:
                     raise InstallationException('Unable to install drush-dev')
 
-            if composer_version == 7:
+            if drush_version == 7:
                 if os.system('composer global require drush/drush:7.*') != 0:
                     raise InstallationException('Unable to install drush 7')
 
-            if composer_version == 6:
+            if drush_version == 6:
                 if os.system('composer global require drush/drush:6.*') != 0:
                     raise InstallationException('Unable to install drush 6')
 
