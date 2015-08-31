@@ -91,6 +91,9 @@ class Manager(object):
             if composer_version == 6:
                 if os.system('composer global require drush/drush:6.*') != 0:
                     raise InstallationException('Unable to install drush 6')
+
+            if os.system('ln -s /home/ubuntu/.composer/vendor/bin/drush /usr/local/bin/drush') != 0:
+                print('Unable to link drush to system path')
                 
             if os.system('cd %s && composer install' % (self.application.get('directory'))) != 0:
                 raise InstallationException('Unable to install composer dependencies')
