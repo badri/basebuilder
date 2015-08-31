@@ -92,7 +92,7 @@ class Manager(object):
                 if os.system('composer global require drush/drush:6.*') != 0:
                     raise InstallationException('Unable to install drush 6')
                 
-            if os.system('cd %s && %s install' % (self.application.get('directory'), composer_phar)) != 0:
+            if os.system('cd %s && composer install' % (self.application.get('directory'))) != 0:
                 raise InstallationException('Unable to install composer dependencies')
 
     def configure(self):
