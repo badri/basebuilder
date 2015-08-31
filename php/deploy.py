@@ -58,8 +58,7 @@ class Manager(object):
 
             f.close()
 
-        if self.configuration.get('composer', True):
-            self.install_composer()
+        self.install_composer()        
 
     def install_composer(self):
         if os.path.isfile(os.path.join(self.application.get('directory'), 'composer.json')):
@@ -75,6 +74,24 @@ class Manager(object):
                 if os.system(download_cmd) != 0:
                     raise InstallationException('Unable to download composer')
 
+                mv_cmd = 'mv %s /usr/local/bin/composer' % (composer_phar)
+
+                if os.system(mv_cmd) != 0:
+                    raise InstallationException('Unable to mv composer.phar')
+
+            composer_version = self.configuration.get('drush', 7)
+            if composer_version == 8:
+                if os.system('composer global require drush/drush:dev-master') != 0:
+                    raise InstallationException('Unable to install drush-dev')
+
+            if composer_version == 7:
+                if os.system('composer global require drush/drush:7.*') != 0:
+                    raise InstallationException('Unable to install drush 7')
+
+            if composer_version == 6:
+                if os.system('composer global require drush/drush:6.*') != 0:
+                    raise InstallationException('Unable to install drush 6')
+                
             if os.system('cd %s && %s install' % (self.application.get('directory'), composer_phar)) != 0:
                 raise InstallationException('Unable to install composer dependencies')
 
