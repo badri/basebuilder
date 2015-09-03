@@ -96,11 +96,14 @@ class Manager(object):
             if os.system('composer global require drush/drush:6.*') != 0:
                 raise InstallationException('Unable to install drush 6')
 
+        if os.system('ln -s /home/ubuntu/.composer/vendor/bin/drush /usr/local/bin/drush') != 0:
+            print('Unable to link drush to system path')
+
         profile = drupal_config.get('profile', 'standard')
         extra_opts = drupal_config.get('extra-opts')
         admin_password = drupal_config.get('admin-password', 'admin')
 
-        working_dir=self.application.get('directory')
+        working_dir = self.application.get('directory')
 
 
         is_installed = "drush status --root={app_dir} | grep -i 'drupal bootstrap' | grep -i -q 'successful'".format(app_dir=working_dir)
