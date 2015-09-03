@@ -79,7 +79,9 @@ class Manager(object):
                 if os.system(mv_cmd) != 0:
                     raise InstallationException('Unable to mv composer.phar')
 
-            drush_version = self.configuration.get('drush', 7)
+            drupal_config =  self.configuration.get('drupal')
+
+            drush_version = drupal_config.get('drush', 7)
             if drush_version == 8:
                 if os.system('composer global require drush/drush:dev-master') != 0:
                     raise InstallationException('Unable to install drush-dev')
@@ -97,6 +99,27 @@ class Manager(object):
                 
             if os.system('cd %s && composer install' % (self.application.get('directory'))) != 0:
                 raise InstallationException('Unable to install composer dependencies')
+
+            profile = drupal_config.get('profile', 'standard')
+            extra_opts = drupal_config.get('extra-opts')
+            admin_password = drupal_config.get('admin-password', 'admin')
+
+            working_dir='/home/application/current'
+
+            for shared_dir in self.configuration.get('shared', []):
+                shared_path = os.path.normpath(os.path.join(working_dir, shared_dir))
+                os.system('ln  -s /shared %s' % shared_path)
+
+            is_installed = "drush status --root={app_dir} | grep -i 'drupal bootstrap' | grep -i -q 'successful'".format(app_dir=working_dir)
+            db = {'mysql_user': os.env['MYSQL_USER'], 'mysql_password': os.env['MYSQL_PASSWORD'], 'mysql_host': os.env['MYSQL_HOST'], 'mysql_port': os.env['MYSQL_PORT'], 'mysql_db_name': os.env['MYSQL_DATABASE_NAME']}
+            data = {'site_profile': profile, 'working_dir':working_dir, 'site_name': os.env['TSURU_APPNAME'], 'admin_password':admin_password, 'extra_opts': extra_opts}
+            data.update(db)
+            drush_si = "/usr/bin/env PHP_OPTIONS=\"-d sendmail_path=`which true`\" drush site-install {d[site_profile]} --root={d[working_dir]} --site-name=\"{d[site_name]}\" --account-pass=\"{d[admin_password]}\" --db-url=mysql://{d[mysql_user]}:{d[mysql_password]}@{d[mysql_host]}:{d[mysql_port]}/{d[mysql_db_name]} {d[extra_opts]} --yes".format(d=data)
+
+            if os.system(is_installed) != 0:
+                if os.system(drush_si) != 0:
+                    raise InstallationException('Unable to do drush site-install, %s' % (drush_si))
+
 
     def configure(self):
         if self.interpretor is not None:
