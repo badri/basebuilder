@@ -104,15 +104,16 @@ class Manager(object):
             extra_opts = drupal_config.get('extra-opts')
             admin_password = drupal_config.get('admin-password', 'admin')
 
-            working_dir='/home/application/current'
+            working_dir=self.application.get('directory')
 
             for shared_dir in self.configuration.get('shared', []):
                 shared_path = os.path.normpath(os.path.join(working_dir, shared_dir))
                 os.system('ln  -s /shared %s' % shared_path)
 
             is_installed = "drush status --root={app_dir} | grep -i 'drupal bootstrap' | grep -i -q 'successful'".format(app_dir=working_dir)
-            db = {'mysql_user': os.environ['MYSQL_USER'], 'mysql_password': os.environ['MYSQL_PASSWORD'], 'mysql_host': os.environ['MYSQL_HOST'], 'mysql_port': os.environ['MYSQL_PORT'], 'mysql_db_name': os.environ['MYSQL_DATABASE_NAME']}
-            data = {'site_profile': profile, 'working_dir':working_dir, 'site_name': os.environ['TSURU_APPNAME'], 'admin_password':admin_password, 'extra_opts': extra_opts}
+            env = self.application.get('env')
+            db = {'mysql_user': env['MYSQL_USER'], 'mysql_password': env['MYSQL_PASSWORD'], 'mysql_host': env['MYSQL_HOST'], 'mysql_port': env['MYSQL_PORT'], 'mysql_db_name': env['MYSQL_DATABASE_NAME']}
+            data = {'site_profile': profile, 'working_dir':working_dir, 'site_name': env['TSURU_APPNAME'], 'admin_password':admin_password, 'extra_opts': extra_opts}
             data.update(db)
             drush_si = "/usr/bin/env PHP_OPTIONS=\"-d sendmail_path=`which true`\" drush site-install {d[site_profile]} --root={d[working_dir]} --site-name=\"{d[site_name]}\" --account-pass=\"{d[admin_password]}\" --db-url=mysql://{d[mysql_user]}:{d[mysql_password]}@{d[mysql_host]}:{d[mysql_port]}/{d[mysql_db_name]} {d[extra_opts]} --yes".format(d=data)
 
