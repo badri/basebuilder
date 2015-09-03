@@ -115,9 +115,7 @@ class Manager(object):
 
         if os.system(is_installed) != 0:
             # create shared files dir.
-            shared_dir = '/sites/default/files'
-            working_dir = self.application.get('directory')
-            shared_path = os.path.normpath(os.path.join(working_dir, shared_dir))
+            shared_path = '/home/application/current/sites/default/files'
             shared_files = 'ln  -s /shared %s' % shared_path
             print(shared_files)
             if os.system(shared_files) != 0:
