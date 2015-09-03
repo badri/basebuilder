@@ -113,6 +113,7 @@ class Manager(object):
         data.update(db)
         drush_si = "/usr/bin/env PHP_OPTIONS=\"-d sendmail_path=`which true`\" drush site-install {d[site_profile]} --root={d[working_dir]} --site-name=\"{d[site_name]}\" --account-pass=\"{d[admin_password]}\" --db-url=mysql://{d[mysql_user]}:{d[mysql_password]}@{d[mysql_host]}:{d[mysql_port]}/{d[mysql_db_name]} {d[extra_opts]} --yes".format(d=data)
 
+        print(is_installed)
         if os.system(is_installed) != 0:
             # create shared files dir.
             shared_path = '/home/application/current/sites/default/files'
