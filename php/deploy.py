@@ -111,8 +111,8 @@ class Manager(object):
                 os.system('ln  -s /shared %s' % shared_path)
 
             is_installed = "drush status --root={app_dir} | grep -i 'drupal bootstrap' | grep -i -q 'successful'".format(app_dir=working_dir)
-            db = {'mysql_user': os.env['MYSQL_USER'], 'mysql_password': os.env['MYSQL_PASSWORD'], 'mysql_host': os.env['MYSQL_HOST'], 'mysql_port': os.env['MYSQL_PORT'], 'mysql_db_name': os.env['MYSQL_DATABASE_NAME']}
-            data = {'site_profile': profile, 'working_dir':working_dir, 'site_name': os.env['TSURU_APPNAME'], 'admin_password':admin_password, 'extra_opts': extra_opts}
+            db = {'mysql_user': os.environ['MYSQL_USER'], 'mysql_password': os.environ['MYSQL_PASSWORD'], 'mysql_host': os.environ['MYSQL_HOST'], 'mysql_port': os.environ['MYSQL_PORT'], 'mysql_db_name': os.environ['MYSQL_DATABASE_NAME']}
+            data = {'site_profile': profile, 'working_dir':working_dir, 'site_name': os.environ['TSURU_APPNAME'], 'admin_password':admin_password, 'extra_opts': extra_opts}
             data.update(db)
             drush_si = "/usr/bin/env PHP_OPTIONS=\"-d sendmail_path=`which true`\" drush site-install {d[site_profile]} --root={d[working_dir]} --site-name=\"{d[site_name]}\" --account-pass=\"{d[admin_password]}\" --db-url=mysql://{d[mysql_user]}:{d[mysql_password]}@{d[mysql_host]}:{d[mysql_port]}/{d[mysql_db_name]} {d[extra_opts]} --yes".format(d=data)
 
