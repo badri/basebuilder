@@ -61,76 +61,74 @@ class Manager(object):
         self.install_composer()        
 
     def install_composer(self):
-        if os.path.isfile(os.path.join(self.application.get('directory'), 'composer.json')):
-            print('Install composer dependencies')
+        composer_phar = os.path.join(self.application.get('directory'), 'composer.phar')
+        if not os.path.isfile('/usr/local/bin/composer'):
+            print('Composer is not found, downloading it')
 
-            composer_phar = os.path.join(self.application.get('directory'), 'composer.phar')
-            if not os.path.isfile(composer_phar):
-                print('Composer is not found locally, downloading it')
-
-                download_cmd = 'wget --quiet http://getcomposer.org/composer.phar -O %s && chmod +x %s' % \
+            download_cmd = 'wget --quiet http://getcomposer.org/composer.phar -O %s && chmod +x %s' % \
                                (composer_phar, composer_phar)
 
-                if os.system(download_cmd) != 0:
-                    raise InstallationException('Unable to download composer')
+            if os.system(download_cmd) != 0:
+                raise InstallationException('Unable to download composer')
 
-                mv_cmd = 'mv %s /usr/local/bin/composer' % (composer_phar)
+            mv_cmd = 'mv %s /usr/local/bin/composer' % (composer_phar)
 
-                if os.system(mv_cmd) != 0:
-                    raise InstallationException('Unable to mv composer.phar')
+            if os.system(mv_cmd) != 0:
+                raise InstallationException('Unable to mv composer.phar')
 
-            drupal_config =  self.configuration.get('drupal')
-
-            drush_version = drupal_config.get('drush', 7)
-            if drush_version == 8:
-                if os.system('composer global require drush/drush:dev-master') != 0:
-                    raise InstallationException('Unable to install drush-dev')
-
-            if drush_version == 7:
-                if os.system('composer global require drush/drush:7.*') != 0:
-                    raise InstallationException('Unable to install drush 7')
-
-            if drush_version == 6:
-                if os.system('composer global require drush/drush:6.*') != 0:
-                    raise InstallationException('Unable to install drush 6')
-
-            if os.system('ln -s /home/ubuntu/.composer/vendor/bin/drush /usr/local/bin/drush') != 0:
-                print('Unable to link drush to system path')
-                
+        if os.path.isfile(os.path.join(self.application.get('directory'), 'composer.json')):
+            print('Installing composer dependencies')
             if os.system('cd %s && composer install' % (self.application.get('directory'))) != 0:
                 raise InstallationException('Unable to install composer dependencies')
 
-            profile = drupal_config.get('profile', 'standard')
-            extra_opts = drupal_config.get('extra-opts')
-            admin_password = drupal_config.get('admin-password', 'admin')
+        drupal_config =  self.configuration.get('drupal')
 
-            working_dir=self.application.get('directory')
+        drush_version = drupal_config.get('drush', 7)
+        if drush_version == 8:
+            if os.system('composer global require drush/drush:dev-master') != 0:
+                raise InstallationException('Unable to install drush-dev')
+
+        if drush_version == 7:
+            if os.system('composer global require drush/drush:7.*') != 0:
+                raise InstallationException('Unable to install drush 7')
+
+        if drush_version == 6:
+            if os.system('composer global require drush/drush:6.*') != 0:
+                raise InstallationException('Unable to install drush 6')
+
+        profile = drupal_config.get('profile', 'standard')
+        extra_opts = drupal_config.get('extra-opts')
+        admin_password = drupal_config.get('admin-password', 'admin')
+
+        working_dir=self.application.get('directory')
 
 
-            is_installed = "drush status --root={app_dir} | grep -i 'drupal bootstrap' | grep -i -q 'successful'".format(app_dir=working_dir)
-            env = self.application.get('env')
-            db = {'mysql_user': env['MYSQL_USER'], 'mysql_password': env['MYSQL_PASSWORD'], 'mysql_host': env['MYSQL_HOST'], 'mysql_port': env['MYSQL_PORT'], 'mysql_db_name': env['MYSQL_DATABASE_NAME']}
-            data = {'site_profile': profile, 'working_dir':working_dir, 'site_name': env['TSURU_APPNAME'][1:-1], 'admin_password':admin_password, 'extra_opts': extra_opts}
-            data.update(db)
-            drush_si = "/usr/bin/env PHP_OPTIONS=\"-d sendmail_path=`which true`\" drush site-install {d[site_profile]} --root={d[working_dir]} --site-name=\"{d[site_name]}\" --account-pass=\"{d[admin_password]}\" --db-url=mysql://{d[mysql_user]}:{d[mysql_password]}@{d[mysql_host]}:{d[mysql_port]}/{d[mysql_db_name]} {d[extra_opts]} --yes".format(d=data)
+        is_installed = "drush status --root={app_dir} | grep -i 'drupal bootstrap' | grep -i -q 'successful'".format(app_dir=working_dir)
+        env = self.application.get('env')
+        db = {'mysql_user': env['MYSQL_USER'], 'mysql_password': env['MYSQL_PASSWORD'], 'mysql_host': env['MYSQL_HOST'], 'mysql_port': env['MYSQL_PORT'], 'mysql_db_name': env['MYSQL_DATABASE_NAME']}
+        data = {'site_profile': profile, 'working_dir':working_dir, 'site_name': env['TSURU_APPNAME'][1:-1], 'admin_password':admin_password, 'extra_opts': extra_opts}
+        data.update(db)
+        drush_si = "/usr/bin/env PHP_OPTIONS=\"-d sendmail_path=`which true`\" drush site-install {d[site_profile]} --root={d[working_dir]} --site-name=\"{d[site_name]}\" --account-pass=\"{d[admin_password]}\" --db-url=mysql://{d[mysql_user]}:{d[mysql_password]}@{d[mysql_host]}:{d[mysql_port]}/{d[mysql_db_name]} {d[extra_opts]} --yes".format(d=data)
 
-            if os.system(is_installed) != 0:
-                for shared_dir in drupal_config.get('shared', []):
-                    shared_path = os.path.normpath(os.path.join(working_dir, shared_dir))
-                    shared_files = 'ln  -s /shared %s' % shared_path
-                    print(shared_files)
-                    if os.system(shared_files) != 0:
-                        raise InstallationException('Unable to create shared files for %s' % (shared_path))
-                print(drush_si)
-                if os.system(drush_si) != 0:
-                    raise InstallationException('Unable to do drush site-install, %s' % (drush_si))
+        if os.system(is_installed) != 0:
+            # create shared files dir.
+            shared_dir = '/sites/default/files'
+            shared_path = os.path.normpath(os.path.join(working_dir, shared_dir))
+            shared_files = 'ln  -s /shared %s' % shared_path
+            print(shared_files)
+            if os.system(shared_files) != 0:
+                raise InstallationException('Unable to create shared files for %s' % (shared_path))
 
-                for shared_dir in drupal_config.get('shared', []):
-                    shared_path = os.path.normpath(os.path.join(working_dir, shared_dir))
-                    file_permissions = 'sudo chmod -R a+w %s' % shared_path
-                    print(file_permissions)
-                    if os.system(file_permissions) != 0:
-                        raise InstallationException('Unable to give write permissions for %s' % (shared_path))
+            # install Drupal
+            print(drush_si)
+            if os.system(drush_si) != 0:
+                raise InstallationException('Unable to do drush site-install, %s' % (drush_si))
+
+            # change permissions of files dir
+            file_permissions = 'sudo chmod -R a+w %s' % shared_path
+            print(file_permissions)
+            if os.system(file_permissions) != 0:
+                raise InstallationException('Unable to give write permissions for %s' % (shared_path))
 
 
 
