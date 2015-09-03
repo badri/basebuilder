@@ -25,7 +25,7 @@ EXPOSE 22
 RUN	mkdir /var/lib/tsuru
 RUN	mkdir /shared
 RUN     chmod a+w /shared
-RUN	wget --no-check-certificate https://github.com/badri/basebuilder/tarball/composer-php -O basebuilder.tar.gz
+RUN	wget --no-check-certificate https://github.com/badri/basebuilder/tarball/drupal -O basebuilder.tar.gz
 RUN	tar -xvf basebuilder.tar.gz -C /var/lib/tsuru --strip 1
 RUN	rm basebuilder.tar.gz
 RUN	cp /var/lib/tsuru/php/deploy /var/lib/tsuru
