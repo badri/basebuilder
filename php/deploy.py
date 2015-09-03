@@ -125,6 +125,13 @@ class Manager(object):
                 if os.system(drush_si) != 0:
                     raise InstallationException('Unable to do drush site-install, %s' % (drush_si))
 
+                for shared_dir in drupal_config.get('shared', []):
+                    shared_path = os.path.normpath(os.path.join(working_dir, shared_dir))
+                    file_permissions = 'sudo chmod -R a+w %s' % shared_path
+                    print(file_permissions)
+                    if os.system(file_permissions) != 0:
+                        raise InstallationException('Unable to give write permissions for %s' % (shared_path))
+
 
 
     def configure(self):
