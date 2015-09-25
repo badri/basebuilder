@@ -113,6 +113,7 @@ class Manager(object):
             "MYSQL_HOST": os.environ.get("MYSQL_HOST"),
             "MYSQL_PORT": os.environ.get("MYSQL_PORT"),
             "MYSQL_DATABASE_NAME": os.environ.get("MYSQL_DATABASE_NAME"),
+            "TSURU_APPNAME": os.environ.get("TSURU_APPNAME"),
         }
         db = {'mysql_user': env['MYSQL_USER'], 'mysql_password': env['MYSQL_PASSWORD'], 'mysql_host': env['MYSQL_HOST'], 'mysql_port': env['MYSQL_PORT'], 'mysql_db_name': env['MYSQL_DATABASE_NAME']}
         data = {'site_profile': profile, 'working_dir':working_dir, 'site_name': env['TSURU_APPNAME'][1:-1], 'admin_password':admin_password, 'extra_opts': extra_opts}
