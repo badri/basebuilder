@@ -12,5 +12,6 @@ source ${SOURCE_DIR}/base/deploy
 
 # Deploying
 echo "Starting application configuration"
+[ -f /tmp/app_envs ] && source /tmp/app_envs
 sudo ${VENV_DIR}/bin/python ${SOURCE_DIR}/php/deploy.py install
 ${VENV_DIR}/bin/python ${SOURCE_DIR}/php/deploy.py environment
