@@ -105,10 +105,15 @@ class Manager(object):
         admin_password = drupal_config.get('admin-password', 'admin')
 
         working_dir = self.application.get('directory')
-        print self.application
 
         is_installed = "drush status --root={app_dir} | grep -i 'drupal bootstrap' | grep -i -q 'successful'".format(app_dir=working_dir)
-        env = self.application.get('env')
+        env = {
+            "MYSQL_USER": os.environ.get("MYSQL_USER"),
+            "MYSQL_PASSWORD": os.environ.get("MYSQL_PASSWORD"),
+            "MYSQL_HOST": os.environ.get("MYSQL_HOST"),
+            "MYSQL_PORT": os.environ.get("MYSQL_PORT"),
+            "MYSQL_DATABASE_NAME": os.environ.get("MYSQL_DATABASE_NAME"),
+        }
         db = {'mysql_user': env['MYSQL_USER'], 'mysql_password': env['MYSQL_PASSWORD'], 'mysql_host': env['MYSQL_HOST'], 'mysql_port': env['MYSQL_PORT'], 'mysql_db_name': env['MYSQL_DATABASE_NAME']}
         data = {'site_profile': profile, 'working_dir':working_dir, 'site_name': env['TSURU_APPNAME'][1:-1], 'admin_password':admin_password, 'extra_opts': extra_opts}
         data.update(db)
