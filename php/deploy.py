@@ -115,8 +115,9 @@ class Manager(object):
             "MYSQL_DATABASE_NAME": os.environ.get("MYSQL_DATABASE_NAME"),
             "TSURU_APPNAME": os.environ.get("TSURU_APPNAME"),
         }
+        print os.environ
         db = {'mysql_user': env['MYSQL_USER'], 'mysql_password': env['MYSQL_PASSWORD'], 'mysql_host': env['MYSQL_HOST'], 'mysql_port': env['MYSQL_PORT'], 'mysql_db_name': env['MYSQL_DATABASE_NAME']}
-        data = {'site_profile': profile, 'working_dir':working_dir, 'site_name': env['TSURU_APPNAME'][1:-1], 'admin_password':admin_password, 'extra_opts': extra_opts}
+        data = {'site_profile': profile, 'working_dir':working_dir, 'site_name': 'test site', 'admin_password':admin_password, 'extra_opts': extra_opts}
         data.update(db)
         drush_si = "/usr/bin/env PHP_OPTIONS=\"-d sendmail_path=`which true`\" drush site-install {d[site_profile]} --root={d[working_dir]} --site-name=\"{d[site_name]}\" --account-pass=\"{d[admin_password]}\" --db-url=mysql://{d[mysql_user]}:{d[mysql_password]}@{d[mysql_host]}:{d[mysql_port]}/{d[mysql_db_name]} {d[extra_opts]} --yes".format(d=data)
 
