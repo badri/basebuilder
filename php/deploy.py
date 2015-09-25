@@ -82,7 +82,6 @@ class Manager(object):
                 raise InstallationException('Unable to install composer dependencies')
 
         drupal_config =  self.configuration.get('drupal')
-        print drupal_config
 
         drush_version = drupal_config.get('drush', 7)
         if drush_version == 8:
@@ -115,7 +114,6 @@ class Manager(object):
             "MYSQL_DATABASE_NAME": os.environ.get("MYSQL_DATABASE_NAME"),
             "TSURU_APPNAME": os.environ.get("TSURU_APPNAME"),
         }
-        print os.environ
         db = {'mysql_user': env['MYSQL_USER'], 'mysql_password': env['MYSQL_PASSWORD'], 'mysql_host': env['MYSQL_HOST'], 'mysql_port': env['MYSQL_PORT'], 'mysql_db_name': env['MYSQL_DATABASE_NAME']}
         data = {'site_profile': profile, 'working_dir':working_dir, 'site_name': 'test site', 'admin_password':admin_password, 'extra_opts': extra_opts}
         data.update(db)
