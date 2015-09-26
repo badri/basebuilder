@@ -22,6 +22,7 @@ RUN echo -e '[program:sshd]\ncommand=/usr/sbin/sshd -D\n\n' >> /etc/supervisor/s
 CMD exec supervisord -n
 EXPOSE 22
 
+RUN     php5enmod mcrypt
 RUN	mkdir /var/lib/tsuru
 RUN	mkdir /shared
 RUN     chmod a+w /shared
