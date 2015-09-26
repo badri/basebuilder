@@ -8,6 +8,7 @@
 
 FROM    ubuntu:14.04
 RUN	apt-get update
+RUN	apt-get install wget -y --force-yes
 RUN	apt-get install mysql-client -y
 RUN	apt-get install php5-gd -y
 RUN	apt-get install php5-curl -y
