@@ -96,13 +96,15 @@ class Manager(object):
             if os.system('composer global require drush/drush:6.*') != 0:
                 raise InstallationException('Unable to install drush 6')
 
-        if os.system('ln -s /home/ubuntu/.composer/vendor/bin/drush /usr/local/bin/drush') != 0:
-            print('Unable to link drush to system path')
+        if not os.path.isfile('/usr/local/bin/drush'):
+            if os.system('ln -s /home/ubuntu/.composer/vendor/bin/drush /usr/local/bin/drush') != 0:
+                print('Unable to link drush to system path')
 
         profile = drupal_config.get('profile', 'standard')
         extra_opts = drupal_config.get('extra-opts')
         admin_password = drupal_config.get('admin-password', 'admin')
 
+        os.system('chmod a+w /home/ubuntu/.drush')
         working_dir = self.application.get('directory')
 
         is_installed = "drush status --root={app_dir} | grep -i 'drupal bootstrap' | grep -i -q 'successful'".format(app_dir=working_dir)
@@ -128,7 +130,7 @@ class Manager(object):
 
         print(is_installed)
         if os.system(is_installed) != 0:
-
+            print('Drupal is not installed. Installing Drupal...')
             # install Drupal
             print(drush_si)
             if os.system(drush_si) != 0:
@@ -139,7 +141,8 @@ class Manager(object):
             print(file_permissions)
             if os.system(file_permissions) != 0:
                 raise InstallationException('Unable to give write permissions for %s' % (shared_path))
-
+        else:
+            print('Drupal is already installed.')
 
 
     def configure(self):
