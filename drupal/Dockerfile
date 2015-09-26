@@ -9,10 +9,10 @@
 FROM    ubuntu:14.04
 RUN	apt-get update
 RUN	apt-get install mysql-client -y
-RUN	apt-get php5-gd -y
-RUN	apt-get php5-curl -y
-RUN	apt-get libssh2-php -y
-RUN	apt-get php5-mysql -y
+RUN	apt-get install php5-gd -y
+RUN	apt-get install php5-curl -y
+RUN	apt-get install libssh2-php -y
+RUN	apt-get install php5-mysql -y
 
 
 RUN	mkdir /var/lib/tsuru
