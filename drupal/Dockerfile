@@ -7,6 +7,7 @@
 # 1- run: $ tsuru-admin platform-add drupal -d https://raw.github.com/badri/basebuilder/master/drupal/Dockerfile
 
 FROM    ubuntu:14.04
+RUN     apt-get dist-upgrade
 RUN	apt-get update
 RUN	apt-get install wget -y --force-yes
 RUN	apt-get install mysql-client -y
