@@ -146,7 +146,7 @@ class Manager(object):
                 wget_db = 'wget "%s" -q -O /tmp/db-dump.sql.gz' % (db_dump_url)
                 if os.system(wget_db) != 0:
                     raise InstallationException('Unable download DB dump from %s.' % (db_dump_url))
-                decompress_db = 'gzip -d /tmp/db-dump.sql.gz' % (db_dump_url)
+                decompress_db = 'gzip -d /tmp/db-dump.sql.gz'
                 if os.system(decompress_db) != 0:
                     raise InstallationException('Unable to decompress DB dump.')
                 drush_import = 'drush sql-cli --root=%s < /tmp/db-dump.sql' % (working_dir)
