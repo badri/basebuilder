@@ -61,7 +61,11 @@ class Manager(object):
         self.install_composer()        
 
     def install_composer(self):
-        composer_phar = os.path.join(self.application.get('directory'), 'composer.phar')
+        working_dir = self.application.get('directory')
+        docroot = os.path.join(working_dir, 'docroot')
+        if os.path.isdir(docroot):
+            working_dir = docroot
+        composer_phar = os.path.join(working_dir, 'composer.phar')
         if not os.path.isfile('/usr/local/bin/composer'):
             print('Composer is not found, downloading it')
 
@@ -76,9 +80,9 @@ class Manager(object):
             if os.system(mv_cmd) != 0:
                 raise InstallationException('Unable to mv composer.phar')
 
-        if os.path.isfile(os.path.join(self.application.get('directory'), 'composer.json')):
+        if os.path.isfile(os.path.join(working_dir, 'composer.json')):
             print('Installing composer dependencies')
-            if os.system('cd %s && composer install' % (self.application.get('directory'))) != 0:
+            if os.system('cd %s && composer install' % (working_dir)) != 0:
                 raise InstallationException('Unable to install composer dependencies')
 
         drupal_config =  self.configuration.get('drupal')
@@ -106,6 +110,9 @@ class Manager(object):
 
         os.system('chmod a+w /home/ubuntu/.drush')
         working_dir = self.application.get('directory')
+        docroot = os.path.join(working_dir, 'docroot')
+        if os.path.isdir(docroot):
+            working_dir = docroot
 
         is_installed = "drush status --root={app_dir} | grep -i 'drupal bootstrap' | grep -i -q 'successful'".format(app_dir=working_dir)
         env = {
@@ -122,7 +129,7 @@ class Manager(object):
         drush_si = "/usr/bin/env PHP_OPTIONS=\"-d sendmail_path=`which true`\" drush site-install {d[site_profile]} --root={d[working_dir]} --site-name=\"{d[site_name]}\" --account-pass=\"{d[admin_password]}\" --db-url=mysql://{d[mysql_user]}:{d[mysql_password]}@{d[mysql_host]}:{d[mysql_port]}/{d[mysql_db_name]} {d[extra_opts]} --yes".format(d=data)
 
         # create shared files dir always.
-        shared_path = '/home/application/current/sites/default/files'
+        shared_path = os.path.join(working_dir, 'sites', 'default', 'files')
         shared_files = 'ln  -s /shared %s' % shared_path
         print(shared_files)
         if os.system(shared_files) != 0:

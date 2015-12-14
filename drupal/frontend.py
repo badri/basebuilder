@@ -6,6 +6,8 @@
 
 import os
 import shutil
+from string import Template
+
 from utils import replace
 
 class Frontend(object):
@@ -45,6 +47,14 @@ class Apache(Frontend):
         map(os.unlink, [os.path.join(vhost_directory, f) for f in os.listdir(vhost_directory)])
         vhost_path = os.path.join(vhost_directory, 'tsuru-vhost.conf')
         shutil.copyfile(self.get_vhost_filepath(), vhost_path)
+        vhosts_template = open(vhost_path).read()
+        vhosts_template_config = Template(vhosts_template)
+        root_dir = self.application.get('directory')
+        docroot = os.path.join(self.application.get('directory'), 'docroot')
+        if os.path.isdir(docroot):
+            root_dir = docroot
+        new_vhosts_template = vhosts_template_config.substitute({'dir':root_dir})
+        open(vhost_path, 'w').write(new_vhosts_template)
 
         # Set interpretor address is there's any
         if interpretor is not None:
