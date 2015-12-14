@@ -143,7 +143,7 @@ class Manager(object):
         if os.system(is_installed) != 0:
             if db_dump_url:
                 print('Drupal is not installed, but found a DB dump url %s' % (db_dump_url))
-                wget_db = 'wget "%s" -O /tmp/db-dump.sql.gz' % (db_dump_url)
+                wget_db = 'wget "%s" -q -O /tmp/db-dump.sql.gz' % (db_dump_url)
                 if os.system(wget_db) != 0:
                     raise InstallationException('Unable download DB dump from %s.' % (db_dump_url))
                 decompress_db = 'gzip -d /tmp/db-dump.sql.gz' % (db_dump_url)
