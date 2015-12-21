@@ -112,7 +112,7 @@ class Manager(object):
         file_dump_url = drupal_config.get('file-dump-url', '')
 
 
-        os.system('chmod a+w /home/ubuntu/.drush')
+        os.system('chmod -R a+w /home/ubuntu/.drush')
         working_dir = self.application.get('directory')
         docroot = os.path.join(working_dir, 'docroot')
         if os.path.isdir(docroot):

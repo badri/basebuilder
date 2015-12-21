@@ -6,7 +6,6 @@
 
 import os
 import shutil
-from string import Template
 
 from utils import replace
 
@@ -48,7 +47,6 @@ class Apache(Frontend):
         vhost_path = os.path.join(vhost_directory, 'tsuru-vhost.conf')
         shutil.copyfile(self.get_vhost_filepath(), vhost_path)
         vhosts_template = open(vhost_path).read()
-        vhosts_template_config = Template(vhosts_template)
         docroot = os.path.join(self.application.get('directory'), 'docroot')
         if os.path.isdir(docroot):
             print('docroot directory exists')
@@ -56,7 +54,7 @@ class Apache(Frontend):
         else:
             root_dir = self.application.get('directory')
         print root_dir
-        new_vhosts_template = vhosts_template_config.substitute({'dir':root_dir})
+        new_vhosts_template = vhosts_template_config.replace('/home/application/current', root_dir)
         print new_vhosts_template
         open(vhost_path, 'w').write(new_vhosts_template)
 
