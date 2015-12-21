@@ -117,6 +117,7 @@ class Manager(object):
         docroot = os.path.join(working_dir, 'docroot')
         if os.path.isdir(docroot):
             working_dir = docroot
+            print('docroot is working dir')
 
         is_installed = "drush status --root={app_dir} | grep -i 'drupal bootstrap' | grep -i -q 'successful'".format(app_dir=working_dir)
         env = {
