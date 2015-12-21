@@ -53,7 +53,7 @@ class Apache(Frontend):
             root_dir = docroot
         else:
             root_dir = self.application.get('directory')
-        new_vhosts_template = vhosts_template_config.replace('/home/application/current', root_dir)
+        new_vhosts_template = vhosts_template.replace('/home/application/current', root_dir)
         open(vhost_path, 'w').write(new_vhosts_template)
 
         # Set interpretor address is there's any
