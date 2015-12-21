@@ -49,11 +49,13 @@ class Apache(Frontend):
         shutil.copyfile(self.get_vhost_filepath(), vhost_path)
         vhosts_template = open(vhost_path).read()
         vhosts_template_config = Template(vhosts_template)
-        root_dir = self.application.get('directory')
         docroot = os.path.join(self.application.get('directory'), 'docroot')
         if os.path.isdir(docroot):
             print('docroot directory exists')
             root_dir = docroot
+        else:
+            root_dir = self.application.get('directory')
+        print root_dir
         new_vhosts_template = vhosts_template_config.substitute({'dir':root_dir})
         print new_vhosts_template
         open(vhost_path, 'w').write(new_vhosts_template)
