@@ -97,7 +97,6 @@ class Apache(Frontend):
 
         # Fix user rights
         os.system('chown -R %s /etc/apache2 /var/run/apache2 /var/log/apache2 /var/lock/apache2' % self.application.get('user'))
-        os.system('service apache2 restart')
 
     def get_vhost_filepath(self):
         if 'vhost_file' in self.configuration:
