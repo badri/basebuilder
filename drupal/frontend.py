@@ -52,6 +52,7 @@ class Apache(Frontend):
         root_dir = self.application.get('directory')
         docroot = os.path.join(self.application.get('directory'), 'docroot')
         if os.path.isdir(docroot):
+            print('docroot directory exists')
             root_dir = docroot
         new_vhosts_template = vhosts_template_config.substitute({'dir':root_dir})
         open(vhost_path, 'w').write(new_vhosts_template)
