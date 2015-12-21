@@ -55,6 +55,7 @@ class Apache(Frontend):
             print('docroot directory exists')
             root_dir = docroot
         new_vhosts_template = vhosts_template_config.substitute({'dir':root_dir})
+        print new_vhosts_template
         open(vhost_path, 'w').write(new_vhosts_template)
 
         # Set interpretor address is there's any
