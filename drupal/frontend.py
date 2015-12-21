@@ -53,9 +53,7 @@ class Apache(Frontend):
             root_dir = docroot
         else:
             root_dir = self.application.get('directory')
-        print root_dir
         new_vhosts_template = vhosts_template_config.replace('/home/application/current', root_dir)
-        print new_vhosts_template
         open(vhost_path, 'w').write(new_vhosts_template)
 
         # Set interpretor address is there's any
@@ -99,6 +97,7 @@ class Apache(Frontend):
 
         # Fix user rights
         os.system('chown -R %s /etc/apache2 /var/run/apache2 /var/log/apache2 /var/lock/apache2' % self.application.get('user'))
+        os.system('service apache2 restart')
 
     def get_vhost_filepath(self):
         if 'vhost_file' in self.configuration:
