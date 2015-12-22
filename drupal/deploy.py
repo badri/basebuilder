@@ -151,6 +151,7 @@ class Manager(object):
                 if os.system(decompress_db) != 0:
                     raise InstallationException('Unable to decompress DB dump.')
                 drush_import = 'drush sql-cli --root=%s < /tmp/db-dump.sql' % (working_dir)
+                print drush_import
                 if os.system(drush_import) != 0:
                     raise InstallationException('Unable to import DB using drush.')
                 print('Successfully installed using DB dump url %s' % (db_dump_url))
