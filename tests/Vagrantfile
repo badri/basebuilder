@@ -23,6 +23,9 @@ Vagrant.configure("2") do |config|
     aws.region = ENV["AWS_REGION"]
     aws.instance_type = ENV["AWS_INSTANCE_TYPE"]
     aws.instance_ready_timeout = 300
+    aws.security_groups = [ENV["AWS_SECURITY_GROUP"]]
+    aws.subnet_id = ENV["AWS_SUBNET_ID"]
+    aws.associate_public_ip = true
     aws.block_device_mapping = [{"DeviceName" => "/dev/sda1", "Ebs.VolumeSize" => 60}]
     aws.tags = {
       "Name" => "vagrant_platform_test",
@@ -33,11 +36,6 @@ Vagrant.configure("2") do |config|
   config.vm.provider :parallels do |prl, override|
     prl.memory = 1024
     override.vm.box = "parallels/ubuntu-14.04"
-  end
-
-  config.vm.define :post_receive, autostart: false do |post_receive|
-    post_receive.vm.network :private_network, ip: "192.168.50.40"
-    post_receive.vm.provision :shell, path: "run.bash", args: "post_receive"
   end
 
   config.vm.define :pre_receive_archive, autostart: false do |pre_receive_archive|

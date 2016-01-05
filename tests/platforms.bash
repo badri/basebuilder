@@ -14,7 +14,7 @@ function add_platform() {
 	echo "adding platform $platform..."
 	output_file="/tmp/platform-update-${platform}"
 	set +e
-	tsuru-admin platform-add $platform -d https://raw.githubusercontent.com/tsuru/basebuilder/master/${platform}/Dockerfile | tee $output_file
+	tsuru-admin platform-add $platform | tee $output_file
 	result=$?
 	set -e
 	if [[ $result != 0 ]]; then
@@ -42,8 +42,13 @@ function test_platform() {
 	git --git-dir=${app_dir}/.git --work-tree=${app_dir} add ${app_dir}/*
 	git --git-dir=${app_dir}/.git --work-tree=${app_dir} commit -m "add files"
 
-	tsuru app-create ${app_name} ${platform} -o theonepool
+	tsuru app-create ${app_name} ${platform} -o theonepool -t admin
+
+	echo "Running deploy with git push..."
 	git --git-dir=${app_dir}/.git --work-tree=${app_dir} push git@localhost:${app_name}.git master
+
+	echo "Running deploy with app-deploy..."
+	pushd ${app_dir}; tsuru app-deploy -a ${app_name} .; popd
 
 	host=`tsuru app-info -a ${app_name} | grep Address | awk '{print $2}'`
 
@@ -86,11 +91,6 @@ function clean_tsuru_now() {
 
 function tsuru_login {
 	yes $2 | tsuru login $1
-}
-
-function install_swift {
-	sudo apt-get install python-pip python-dev libxml2-dev libxslt-dev libz-dev -y
-	sudo pip install python-swiftclient==2.5.0 python-keystoneclient
 }
 
 function install_s3cmd() {
@@ -160,7 +160,6 @@ case $1 in
 		hook_url="https://raw.githubusercontent.com/tsuru/tsuru/master/misc/git-hooks/pre-receive.swift"
 		hook_name="pre-receive"
 		envs=("AUTH_PARAMS=\"${SWIFT_AUTH_PARAMS}\"" "CONTAINER_NAME=${SWIFT_CONTAINER_NAME}" "CDN_URL=${SWIFT_CDN_URL}")
-		install_swift
 		;;
 	pre_receive_s3)
 		hook_url="https://raw.githubusercontent.com/tsuru/tsuru/master/misc/git-hooks/pre-receive.s3cmd"
@@ -190,7 +189,7 @@ set -e
 clone_basebuilder /tmp/basebuilder
 echo -e "Host localhost\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
 
-platforms="java nodejs php python python3 ruby static cordova play iojs go"
+platforms="static java nodejs php python python3 ruby cordova play go elixir buildpack"
 
 for platform in $platforms
 do
