@@ -6,4 +6,4 @@
 # to run it:
 # 1- run: $ tsuru-admin platform-add drupal -d https://raw.github.com/badri/basebuilder/master/drupal/Dockerfile
 
-FROM    minnal/drupal-alpine
+FROM    minnal/drupal
